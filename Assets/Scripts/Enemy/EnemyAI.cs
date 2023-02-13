@@ -41,7 +41,6 @@ public class EnemyAI : MonoBehaviour
                         aiState = AIState.chasing;
                         animator.SetBool("Chasing", true);
                     }
-                    nm.SetDestination(transform.position);
                     break;
                 // when player is not within distanceThreshold play Idle animation and do not move towards player
                 case AIState.chasing:
