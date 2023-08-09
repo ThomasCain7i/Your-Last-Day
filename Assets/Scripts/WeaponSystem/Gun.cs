@@ -1,87 +1,28 @@
-using System.Collections;
 using UnityEngine;
 
 public class Gun : MonoBehaviour
 {
-    [Header("References")]
-    [SerializeField] private GunData gunData;
+    public float rayLength = 50f;
     [SerializeField] private Transform cam;
-    [SerializeField] private int damage = 10;
 
-    private UI_Manager _uiManager;
-    private EnemyHealth enemyHealth;
-
-    float timeSinceLastShot;
-
-    private void Start()
+    void Update()
     {
-        PlayerShoot.shootInput += Shoot;
-        PlayerShoot.reloadInput += StartReload;
+        Debug.DrawRay(transform.position, cam.forward, Color.green);
 
-        _uiManager = GameObject.Find("Canvas").GetComponent<UI_Manager>();
-    }
+        // Cast a ray from the position of this GameObject's transform.forward
+        Ray ray = new Ray(transform.position, transform.forward);
 
-    /*If weapon swithcd cancel reload*/
-    private void OnDisable() => gunData.reloading = false;
+        RaycastHit hitInfo;
 
-    public void StartReload()
-    {
-        if (!gunData.reloading && this.gameObject.activeSelf)
-            StartCoroutine(Reload());
-    }
-
-    private IEnumerator Reload()
-    {
-        //Set reloading to true (cant shoot)
-        gunData.reloading = true;
-
-        //Wait for the set reload time in gunData class
-        yield return new WaitForSeconds(gunData.reloadTime);
-
-        //Set currentAmmo to magSize and update AmmoText
-        gunData.currentAmmo = gunData.magSize;
-        _uiManager.UpdateAmmo(gunData.currentAmmo);
-
-        //Set reloading to false (can shoot)
-        gunData.reloading = false;
-    }
-
-    private bool CanShoot() => !gunData.reloading && timeSinceLastShot > 1f / (gunData.fireRate / 60f);
-
-    private void Shoot()
-    {
-        //Current ammo > 0
-        if (gunData.currentAmmo > 0)
+        // Perform the raycast
+        if (Physics.Raycast(cam.position, cam.forward, out hitInfo, rayLength))
         {
-            //CanShoot() => !gunData.reloading && timeSinceLastShot > 1f / (gunData.fireRate / 60f);
-            if (CanShoot())
+            // Check if the hit object has the "Enemy" tag
+            if (hitInfo.collider.CompareTag("Enemy"))
             {
-                // Cast ray from camera forwards as far as the current weapons max distance.
-                if (Physics.Raycast(cam.position, cam.forward, out RaycastHit hitInfo, gunData.maxDistance))
-                {
-                    Debug.DrawRay(transform.position, cam.forward, Color.green);
-                    //Deal damage using the gunData set damage for that weapon
-                    if (hitInfo.collider != null)
-                    {
-                        Debug.Log("Shot Enemie");
-                        gameObject.GetComponent<EnemyHealth>().TakeDamage(damage);
-                    }
-                }
-                //Update cuurent ammo on gunshot
-                gunData.currentAmmo--;
-                _uiManager.UpdateAmmo(gunData.currentAmmo);
-                timeSinceLastShot = 0;
-                OnGunShot();
+                // Do something when the ray hits an object with the "Enemy" tag
+                Debug.Log("Hit an enemy!");
             }
         }
     }
-
-    private void Update()
-    {
-        timeSinceLastShot += Time.deltaTime;
-
-        Debug.DrawRay(cam.position, cam.forward * gunData.maxDistance);
-    }
-
-    private void OnGunShot() { }
 }
