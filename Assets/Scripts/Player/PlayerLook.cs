@@ -15,6 +15,9 @@ public class PlayerLook : MonoBehaviour
     private float yRotation;
     private float xRotation;
 
+    [SerializeField]
+    private PauseMenu pauseMenu;
+
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
@@ -22,7 +25,7 @@ public class PlayerLook : MonoBehaviour
     }
 
     private void Update()
-    {
+    {            
         float mouseX = Input.GetAxisRaw("Mouse X") * 0.1f;
         float mouseY = Input.GetAxisRaw("Mouse Y") * 0.1f;
 
@@ -30,10 +33,8 @@ public class PlayerLook : MonoBehaviour
         xRotation -= mouseY * sensY;
 
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
-
+        
         orientation.rotation = Quaternion.Euler(0f, yRotation, 0f);
         cameraHolder.localRotation = Quaternion.Euler(xRotation, yRotation, 0f);
-
     }
-
 }

@@ -1,10 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 public class HealthSystem : MonoBehaviour
 {
     public int maxHealth = 100;
     public int currentHealth;
+    [SerializeField]
+    private GameObject deathMenu;
 
     void Start()
     {
@@ -15,6 +15,7 @@ public class HealthSystem : MonoBehaviour
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
+
         if (currentHealth <= 0)
         {
             Die();
@@ -23,7 +24,8 @@ public class HealthSystem : MonoBehaviour
 
     void Die()
     {
-        // Die in some way
-        
+        Time.timeScale = 0f;
+        deathMenu.SetActive(true);
+        Cursor.lockState = CursorLockMode.Confined;
     }
 }

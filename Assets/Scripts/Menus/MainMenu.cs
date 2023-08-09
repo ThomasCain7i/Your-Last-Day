@@ -8,12 +8,11 @@ public class MainMenu : MonoBehaviour
     public void PlayGame()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene("TestingArea");
+        SceneManager.LoadScene("MainLevel");
     }
 
     public void QuitGame()
     {
-        Debug.Log("Quitting...");
         Application.Quit();
     }
 }

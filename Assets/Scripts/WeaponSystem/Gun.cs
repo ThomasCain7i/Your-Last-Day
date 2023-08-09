@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Gun : MonoBehaviour
@@ -8,8 +6,10 @@ public class Gun : MonoBehaviour
     [Header("References")]
     [SerializeField] private GunData gunData;
     [SerializeField] private Transform cam;
+    [SerializeField] private int damage = 10;
 
     private UI_Manager _uiManager;
+    private EnemyHealth enemyHealth;
 
     float timeSinceLastShot;
 
@@ -59,9 +59,13 @@ public class Gun : MonoBehaviour
                 // Cast ray from camera forwards as far as the current weapons max distance.
                 if (Physics.Raycast(cam.position, cam.forward, out RaycastHit hitInfo, gunData.maxDistance))
                 {
+                    Debug.DrawRay(transform.position, cam.forward, Color.green);
                     //Deal damage using the gunData set damage for that weapon
-                    IDamageable damageable = hitInfo.transform.GetComponent<IDamageable>();
-                    damageable?.TakeDamage(gunData.damage);
+                    if (hitInfo.collider != null)
+                    {
+                        Debug.Log("Shot Enemie");
+                        gameObject.GetComponent<EnemyHealth>().TakeDamage(damage);
+                    }
                 }
                 //Update cuurent ammo on gunshot
                 gunData.currentAmmo--;

@@ -1,82 +1,147 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class EnemyAI : MonoBehaviour
 {
-    //Reference to NavMesh
-    NavMeshAgent nm;
-    //How to find the player using its transform
-    public Transform target;
+    [Header("References")]
+    public NavMeshAgent agent; // Reference to the NavMeshAgent component
+    public Transform player; // Reference to the player's transform
 
-    public float distanceThreshold = 30f;
-    public int damage = 20;
-    public enum AIState { idle, chasing, attack };
+    public LayerMask whatIsGround, whatIsPlayer; // Layer masks for ground and player
 
-    public AIState aiState = AIState.idle;
+    [Header("Stats")]
+    public float speed; // Movement speed of the enemy
+    public float damage; // Damage caused by the enemy
 
-    public Animator animator;
-    public float attackThreshold = 1f;
+    // Patrolling
+    [Header("Patrolling")]
+    public Transform[] patrolPoints; // Array of patrol points
+    private int currentPatrolIndex; // Index of the current patrol point
 
-    // Start is called before the first frame update
-    void Start()
+    // Attacking
+    [Header("Attacking")]
+    public float timeBetweenAttacks; // Time between attacks
+    [SerializeField]
+    private bool alreadyAttacked; // Flag indicating if the enemy has already attacked
+    public GameObject hitBox; // Hit box game object for attacking
+    public float distanceFromPlayer; // Distance from the player
+    private float lastAttackTime; // Time of the last attack
+
+    // States
+    [Header("States")]
+    public float sightRange; // Range for detecting the player
+    public float attackRange; // Range for attacking the player
+    public bool playerInSightRange, playerInAttackRange, canSee; // Flags indicating if the player is within sight range and attack range
+
+    [Header("Animation")]
+    [SerializeField]
+    private Animator animator;
+
+    private void Awake()
     {
-        nm = GetComponent<NavMeshAgent>();
-        StartCoroutine(Think());
-        target = GameObject.FindGameObjectWithTag("Player").transform;
+        animator = GetComponent<Animator>();
+        player = GameObject.Find("Player").transform; // Find and assign the player's transform
+        agent = GetComponent<NavMeshAgent>(); // Get the NavMeshAgent component of the enemy
+        speed = Random.Range(1, 5);
+        agent.speed = speed; // Set the movement speed of the enemy
     }
 
-    IEnumerator Think()
+    private void Update()
     {
-        while (true)
+        // Check for sight and attack range
+        playerInSightRange = Physics.CheckSphere(transform.position, sightRange, whatIsPlayer); // Check if the player is within sight range
+        playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer); // Check if the player is within attack range
+
+        if (!playerInSightRange && !playerInAttackRange)
+            Patroling(); // If the player is not in sight or attack range, patrol
+        else if (playerInSightRange && !playerInAttackRange)
+            ChasePlayer(); // If the player is in sight range but not attack range, chase the player
+        else if (playerInAttackRange && playerInSightRange)
+            AttackPlayer(); // If the player is in attack range and sight range, attack the player
+
+        // Perform raycast
+        RaycastHit hit;
+        Vector3 direction = player.position - transform.position;
+        if (Physics.Raycast(transform.position, direction, out hit))
         {
-            switch (aiState)
+            // Check if the raycast hits the player
+            if (hit.collider.CompareTag("Player") || hit.collider.CompareTag("Collectable"))
             {
-                //When player transform dist < distance threshold set AIState to chasing, set chasing bool in animation to true and have the enemy move towards the player transform
-                case AIState.idle:
-                    float dist = Vector3.Distance(target.position, transform.position);
-                    if (dist < distanceThreshold)
-                    {
-                        aiState = AIState.chasing;
-                        animator.SetBool("Chasing", true);
-                    }
-                    break;
-                // when player is not within distanceThreshold play Idle animation and do not move towards player
-                case AIState.chasing:
-                    dist = Vector3.Distance(target.position, transform.position);
-                    if (dist > distanceThreshold)
-                    {
-                        aiState = AIState.idle;
-                        animator.SetBool("Chasing", false);
-                    }
-                    if (dist < attackThreshold)
-                    {
-                        //Enter attack state
-                        aiState = AIState.attack;
-                        animator.SetBool("Attacking", true);
-                    }
-                    nm.SetDestination(target.position);
-                    break;
-                case AIState.attack:
-                    //Do attack stuff
-                    Debug.Log("Attack!");
-                    nm.SetDestination(transform.position);
-                    dist = Vector3.Distance(target.position, transform.position);
-                    if (dist > attackThreshold)
-                    {
-                        aiState = AIState.chasing;
-                        Attack();
-                    }
-                    break;
-                default:
-                    break;
+                // Player is hit, do something
+                canSee = true;
             }
-            yield return new WaitForSeconds(0.2f);
+            else
+            {
+                // There is an obstacle between the player and sniper, do something else
+                canSee = false;
+            }
         }
     }
-    void Attack()
+
+    private void Patroling()
     {
-       
+        animator.SetBool("Chasing", false);
+        animator.SetBool("Attacking", false);
+
+        if (patrolPoints.Length == 0)
+        {
+            Debug.LogWarning("No patrol points assigned!"); // Log a warning if no patrol points are assigned
+            return;
+        }
+
+        if (agent.remainingDistance <= agent.stoppingDistance)
+        {
+            // Reached the current patrol point, move to the next one
+            currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length; // Increment the patrol point index
+            agent.SetDestination(patrolPoints[currentPatrolIndex].position); // Set the destination to the next patrol point
+        }
+    }
+
+    private void ChasePlayer()
+    {
+        animator.SetBool("Chasing", true);
+        animator.SetBool("Attacking", false);
+
+        Vector3 targetPosition = player.position - (transform.forward * distanceFromPlayer); // Calculate the target position to chase the player
+        agent.SetDestination(targetPosition); // Set the destination to the target position
+    }
+
+    private void AttackPlayer()
+    {
+        animator.SetBool("Chasing", false);
+        animator.SetBool("Attacking", true);
+
+        if (canSee)
+        {
+            Vector3 targetPosition = player.position - (transform.forward * distanceFromPlayer); // Calculate the target position to attack the player
+            agent.SetDestination(targetPosition); // Set the destination to the target position
+
+            if (!alreadyAttacked && Time.time - lastAttackTime >= timeBetweenAttacks)
+            {
+                // Attack code here
+                hitBox.SetActive(true); // Activate the hit box for attacking
+                                        // End of attack code
+
+                alreadyAttacked = true; // Set alreadyAttacked flag to true
+                lastAttackTime = Time.time; // Update the last attack time
+
+                Invoke(nameof(ResetAttack), timeBetweenAttacks); // Call ResetAttack method after the specified time
+            }
+        }
+    }
+
+    private void ResetAttack()
+    {
+        hitBox.SetActive(false); // Deactivate the hit box
+        alreadyAttacked = false; // Reset the alreadyAttacked flag
+        lastAttackTime = Time.time; // Update the last attack time
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRange); // Draw a wire sphere representing the attack range
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, sightRange); // Draw a wire sphere representing the sight range
     }
 }
