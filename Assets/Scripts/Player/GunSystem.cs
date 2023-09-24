@@ -60,15 +60,13 @@ public class GunSystem : MonoBehaviour
         //Calculate Direction with Spread
         Vector3 direction = camera.transform.forward + new Vector3(x, y, 0);
 
-        //RayCast
         if (Physics.Raycast(camera.transform.position, direction, out rayHit, range, whatIsEnemy))
         {
-            Debug.Log(rayHit.collider.name);
+            Debug.Log("Raycast hit: " + rayHit.collider.name); // Debug log message
 
             if (rayHit.collider.CompareTag("Enemy"))
                 rayHit.collider.GetComponent<EnemyHealth>().TakeDamage(damage);
 
-            // Visualize the raycast by drawing a line
             Debug.DrawLine(camera.transform.position, rayHit.point, Color.red, 1.0f);
         }
 
