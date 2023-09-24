@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyHealth : MonoBehaviour
@@ -13,6 +11,7 @@ public class EnemyHealth : MonoBehaviour
         maxHealth = Random.Range(25, 50);
         currentHealth = maxHealth;
     }
+
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;

@@ -9,16 +9,16 @@ public class PauseMenu : MonoBehaviour
 
     public GameObject pauseMenuUI;
 
-    private HealthSystem healthSystem;
+    [SerializeField] private PlayerHealth playerHealth;
 
     private void Start()
     {
-        healthSystem = FindObjectOfType<HealthSystem>();
+        playerHealth = FindObjectOfType<PlayerHealth>();
     }
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && healthSystem.currentHealth >= 0)
+        if (Input.GetKeyDown(KeyCode.Escape) && playerHealth.currentHealth >= 0)
         {
             if (GameIsPaused)
             {
