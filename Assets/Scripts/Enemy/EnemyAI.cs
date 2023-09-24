@@ -11,10 +11,12 @@ public class EnemyAI : MonoBehaviour
 
     // Stats
     public float speed;
+    public float speedSaved;
     public int damage;
 
     // Attack
     public float attackRange;
+    public float stopRange;
     public float timeBetweenAttacks;
     private float lastAttackTime;
     private bool isAttacking;
@@ -28,9 +30,12 @@ public class EnemyAI : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         player = GameObject.Find("Player").transform;
         speed = Random.Range(1, 5);
+        speedSaved = speed;
         agent.speed = speed;
         playerHealth = FindObjectOfType<PlayerHealth>();
     }
+
+
 
     private void Update()
     {
@@ -47,6 +52,15 @@ public class EnemyAI : MonoBehaviour
             // Player moved out of attack range, reset to chasing mode
             animator.SetBool("Attacking", false);
             isAttacking = false;
+        }
+
+        if (Vector3.Distance(transform.position, player.position) <= stopRange)
+        {
+            agent.speed = 0;
+        }
+        else
+        {
+            agent.speed = speedSaved;
         }
     }
 
