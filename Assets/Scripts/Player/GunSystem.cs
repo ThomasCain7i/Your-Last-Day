@@ -4,6 +4,7 @@ using TMPro;
 public class GunSystem : MonoBehaviour
 {
     //Gun stats
+    public string weaponName;
     public int damage;
     public float timeBetweenShooting, spread, range, reloadTime, timeBetweenShots;
     public int magazineSize, bulletsPerTap;
@@ -21,7 +22,7 @@ public class GunSystem : MonoBehaviour
 
     //Graphics
     public GameObject muzzleFlash, bulletHoleGraphic;
-    public TextMeshProUGUI text;
+    public TextMeshProUGUI ammoText, gunText;
 
     private void Awake()
     {
@@ -33,7 +34,8 @@ public class GunSystem : MonoBehaviour
         MyInput();
 
         //SetText
-        text.SetText(bulletsLeft + " / " + magazineSize);
+        ammoText.SetText(bulletsLeft + " / " + magazineSize);
+        gunText.SetText(weaponName);
     }
     private void MyInput()
     {
