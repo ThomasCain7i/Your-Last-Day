@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GunSelector : MonoBehaviour
 {
-    [SerializeField] private GameObject machineGun, shotGun, pistolGun;
+    [SerializeField] private GameObject machineGun, shotGun, pistolGun, railGun;
 
     // Update is called once per frame
     void Update()
@@ -14,6 +14,7 @@ public class GunSelector : MonoBehaviour
             machineGun.SetActive(true);
             shotGun.SetActive(false);
             pistolGun.SetActive(false);
+            railGun.SetActive(false);
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha2))
@@ -21,6 +22,7 @@ public class GunSelector : MonoBehaviour
             machineGun.SetActive(false);
             shotGun.SetActive(true);
             pistolGun.SetActive(false);
+            railGun.SetActive(false);
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha3))
@@ -28,6 +30,15 @@ public class GunSelector : MonoBehaviour
             machineGun.SetActive(false);
             shotGun.SetActive(false);
             pistolGun.SetActive(true);
+            railGun.SetActive(false);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            machineGun.SetActive(false);
+            shotGun.SetActive(false);
+            pistolGun.SetActive(false);
+            railGun.SetActive(true);
         }
     }
 }
