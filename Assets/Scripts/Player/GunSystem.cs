@@ -17,7 +17,7 @@ public class GunSystem : MonoBehaviour
     public Camera camera;
     public Transform attackPoint;
     public RaycastHit rayHit;
-    public LayerMask whatIsEnemy;
+    public LayerMask whatIsEnemy, whatIsWall;
 
     //Graphics
     public GameObject muzzleFlash, bulletHoleGraphic;
@@ -49,6 +49,11 @@ public class GunSystem : MonoBehaviour
             Shoot();
         }
     }
+
+
+
+
+
     private void Shoot()
     {
         readyToShoot = false;
