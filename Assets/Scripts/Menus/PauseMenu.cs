@@ -15,10 +15,11 @@ public class PauseMenu : MonoBehaviour
     {
         playerHealth = FindObjectOfType<PlayerHealth>();
     }
+
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && playerHealth.currentHealth >= 0)
+        if (Input.GetKeyDown(KeyCode.Escape) && playerHealth.currentHealth > 0)
         {
             if (GameIsPaused)
             {
