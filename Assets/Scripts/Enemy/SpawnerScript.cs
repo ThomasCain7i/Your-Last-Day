@@ -10,6 +10,8 @@ public class SpawnerScript : MonoBehaviour
     public int initialSpawnCount = 1; // Initial number of enemies to spawn
     public int spawnIncreaseAmount = 1; // Amount to increase spawns after each wave
 
+    [SerializeField] Light playerLight;
+
     [SerializeField] private GameObject doorOpen, doorClosed;
 
     private bool spawningEnabled = false;
@@ -22,6 +24,7 @@ public class SpawnerScript : MonoBehaviour
             StartCoroutine(SpawnEnemies());
             doorOpen.SetActive(false);
             doorClosed.SetActive(true);
+            playerLight.enabled = true;
         }
     }
 

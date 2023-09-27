@@ -25,7 +25,7 @@ public class GunSystem : MonoBehaviour
     public TextMeshProUGUI ammoText, gunText;
 
     //Refs
-
+    [SerializeField] private AudioSource audioSource;
     [SerializeField] private PauseMenu pauseMenu;
 
     private void Awake()
@@ -66,6 +66,7 @@ public class GunSystem : MonoBehaviour
     {
         if (!pauseMenu.GameIsPaused)
         {
+            audioSource.PlayOneShot(audioSource.clip, audioSource.volume);
             readyToShoot = false;
 
             //Spread
@@ -85,8 +86,16 @@ public class GunSystem : MonoBehaviour
                 Debug.DrawLine(camera.transform.position, rayHit.point, Color.red, 1.0f);
             }
 
+            if (Physics.Raycast(camera.transform.position, direction, out rayHit, range, whatIsWall))
+            {
+                Debug.Log("Raycast hit: " + rayHit.collider.name); // Debug log message
+
+                Instantiate(bulletHoleGraphic, rayHit.point, Quaternion.Euler(0, 0, 0));
+
+                Debug.DrawLine(camera.transform.position, rayHit.point, Color.red, 1.0f);
+            }
+
             //Graphics
-            Instantiate(bulletHoleGraphic, rayHit.point, Quaternion.Euler(0, 180, 0));
             Instantiate(muzzleFlash, attackPoint.position, Quaternion.identity);
 
             bulletsLeft--;
