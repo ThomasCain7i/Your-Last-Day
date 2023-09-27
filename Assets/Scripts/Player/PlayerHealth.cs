@@ -7,7 +7,7 @@ public class PlayerHealth : MonoBehaviour
     private int maxHealth = 100;
     public int currentHealth;
 
-    [SerializeField] private GameObject deathMenu;
+    [SerializeField] private GameObject deathMenu, ammoMenu;
 
     // Start is called before the first frame update
     void Start()
@@ -29,6 +29,7 @@ public class PlayerHealth : MonoBehaviour
     {
         Time.timeScale = 0f;
         deathMenu.SetActive(true);
+        ammoMenu.SetActive(false);
         Cursor.lockState = CursorLockMode.Confined;
     }
 }

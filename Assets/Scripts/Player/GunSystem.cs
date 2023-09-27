@@ -24,6 +24,10 @@ public class GunSystem : MonoBehaviour
     public GameObject muzzleFlash, bulletHoleGraphic;
     public TextMeshProUGUI ammoText, gunText;
 
+    //Refs
+
+    [SerializeField] private PauseMenu pauseMenu;
+
     private void Awake()
     {
         bulletsLeft = magazineSize;
@@ -31,78 +35,95 @@ public class GunSystem : MonoBehaviour
     }
     private void Update()
     {
-        MyInput();
+        if (!pauseMenu.GameIsPaused)
+        {
+            MyInput();
 
-        //SetText
-        ammoText.SetText(bulletsLeft + " / " + magazineSize);
-        gunText.SetText(weaponName);
+            //SetText
+            ammoText.SetText(bulletsLeft + " / " + magazineSize);
+            gunText.SetText(weaponName);
+        }
     }
     private void MyInput()
     {
-        if (allowButtonHold) shooting = Input.GetKey(KeyCode.Mouse0);
-        else shooting = Input.GetKeyDown(KeyCode.Mouse0);
-
-        if (Input.GetKeyDown(KeyCode.R) && bulletsLeft < magazineSize && !reloading) Reload();
-
-        //Shoot
-        if (readyToShoot && shooting && !reloading && bulletsLeft > 0)
+        if (!pauseMenu.GameIsPaused)
         {
-            bulletsShot = bulletsPerTap;
-            Shoot();
+            if (allowButtonHold) shooting = Input.GetKey(KeyCode.Mouse0);
+            else shooting = Input.GetKeyDown(KeyCode.Mouse0);
+
+            if (Input.GetKeyDown(KeyCode.R) && bulletsLeft < magazineSize && !reloading) Reload();
+
+            //Shoot
+            if (readyToShoot && shooting && !reloading && bulletsLeft > 0)
+            {
+                bulletsShot = bulletsPerTap;
+                Shoot();
+            }
         }
     }
 
-
-
-
-
     private void Shoot()
     {
-        readyToShoot = false;
-
-        //Spread
-        float x = Random.Range(-spread, spread);
-        float y = Random.Range(-spread, spread);
-
-        //Calculate Direction with Spread
-        Vector3 direction = camera.transform.forward + new Vector3(x, y, 0);
-
-        if (Physics.Raycast(camera.transform.position, direction, out rayHit, range, whatIsEnemy))
+        if (!pauseMenu.GameIsPaused)
         {
-            Debug.Log("Raycast hit: " + rayHit.collider.name); // Debug log message
+            readyToShoot = false;
 
-            if (rayHit.collider.CompareTag("Enemy"))
-                rayHit.collider.GetComponent<EnemyHealth>().TakeDamage(damage);
+            //Spread
+            float x = Random.Range(-spread, spread);
+            float y = Random.Range(-spread, spread);
 
-            Debug.DrawLine(camera.transform.position, rayHit.point, Color.red, 1.0f);
+            //Calculate Direction with Spread
+            Vector3 direction = camera.transform.forward + new Vector3(x, y, 0);
+
+            if (Physics.Raycast(camera.transform.position, direction, out rayHit, range, whatIsEnemy))
+            {
+                Debug.Log("Raycast hit: " + rayHit.collider.name); // Debug log message
+
+                if (rayHit.collider.CompareTag("Enemy"))
+                    rayHit.collider.GetComponent<EnemyHealth>().TakeDamage(damage);
+
+                Debug.DrawLine(camera.transform.position, rayHit.point, Color.red, 1.0f);
+            }
+
+            //Graphics
+            Instantiate(bulletHoleGraphic, rayHit.point, Quaternion.Euler(0, 180, 0));
+            Instantiate(muzzleFlash, attackPoint.position, Quaternion.identity);
+
+            bulletsLeft--;
+            bulletsShot--;
+
+            Invoke("ResetShot", timeBetweenShooting);
+
+            if (bulletsShot > 0 && bulletsLeft > 0)
+                Invoke("Shoot", timeBetweenShots);
         }
-
-        //Graphics
-        Instantiate(bulletHoleGraphic, rayHit.point, Quaternion.Euler(0, 180, 0));
-        Instantiate(muzzleFlash, attackPoint.position, Quaternion.identity);
-
-        bulletsLeft--;
-        bulletsShot--;
-
-        Invoke("ResetShot", timeBetweenShooting);
-
-        if (bulletsShot > 0 && bulletsLeft > 0)
-            Invoke("Shoot", timeBetweenShots);
     }
 
 
     private void ResetShot()
     {
-        readyToShoot = true;
+        if (!pauseMenu.GameIsPaused)
+        {
+            readyToShoot = true;
+        }
+
     }
     private void Reload()
     {
-        reloading = true;
-        Invoke("ReloadFinished", reloadTime);
+        if (!pauseMenu.GameIsPaused)
+        {
+            reloading = true;
+            Invoke("ReloadFinished", reloadTime);
+        }
+
     }
     private void ReloadFinished()
     {
-        bulletsLeft = magazineSize;
-        reloading = false;
+        if (!pauseMenu.GameIsPaused)
+        {
+            bulletsLeft = magazineSize;
+            reloading = false;
+        }
+
     }
 }
