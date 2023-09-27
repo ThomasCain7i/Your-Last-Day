@@ -1,11 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SpinMenu : MonoBehaviour
 {
+    public float rotationSpeed = 30.0f; // Adjust the speed as needed
+
     void Update()
     {
-        transform.Rotate(0f, 1 * Time.deltaTime, 0f, Space.Self);
+        // Rotate the object around the Y-axis
+        transform.Rotate(Vector3.up * rotationSpeed * Time.deltaTime);
     }
 }
