@@ -109,7 +109,7 @@ public class EnemyAI : MonoBehaviour
             {
                 // Call the TakeDamage method on the PlayerController
                 playerHealth.TakeDamage(damage);
-                PlaySound();
+                //PlaySound();
             }
 
             lastAttackTime = Time.time;
