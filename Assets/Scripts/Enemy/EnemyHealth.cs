@@ -8,7 +8,7 @@ public class EnemyHealth : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        maxHealth = Random.Range(25, 50);
+        maxHealth = Random.Range(20, 50);
         currentHealth = maxHealth;
     }
 

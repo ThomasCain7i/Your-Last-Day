@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UIElements.Experimental;
 
 public class EnemyAI : MonoBehaviour
 {
@@ -23,6 +24,8 @@ public class EnemyAI : MonoBehaviour
 
     // Animation
     private Animator animator;
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip[] zombieSounds;
 
     private void Awake()
     {
@@ -33,9 +36,28 @@ public class EnemyAI : MonoBehaviour
         speedSaved = speed;
         agent.speed = speed;
         playerHealth = FindObjectOfType<PlayerHealth>();
+
+        if (speedSaved == 5)
+        {
+            animator.speed = 1;
+        }
+        if (speedSaved == 4)
+        {
+            animator.speed = .8f;
+        }
+        if (speedSaved == 3)
+        {
+            animator.speed = .6f;
+        }
+        if (speedSaved == 2)
+        {
+            animator.speed = .4f;
+        }
+        if (speedSaved == 1)
+        {
+            animator.speed = .2f;
+        }
     }
-
-
 
     private void Update()
     {
@@ -87,10 +109,20 @@ public class EnemyAI : MonoBehaviour
             {
                 // Call the TakeDamage method on the PlayerController
                 playerHealth.TakeDamage(damage);
+                PlaySound();
             }
 
             lastAttackTime = Time.time;
             isAttacking = true;
+        }
+    }
+
+    private void PlaySound()
+    {
+        if (zombieSounds.Length > 0)
+        {
+            int randomIndex = Random.Range(0, zombieSounds.Length);
+            audioSource.PlayOneShot(zombieSounds[randomIndex], audioSource.volume);
         }
     }
 

@@ -90,7 +90,7 @@ public class GunSystem : MonoBehaviour
             {
                 Debug.Log("Raycast hit: " + rayHit.collider.name); // Debug log message
 
-                Instantiate(bulletHoleGraphic, rayHit.point, Quaternion.Euler(0, 0, 0));
+                Instantiate(bulletHoleGraphic, rayHit.point, Quaternion.Euler(0, 180, 0));
 
                 Debug.DrawLine(camera.transform.position, rayHit.point, Color.red, 1.0f);
             }
