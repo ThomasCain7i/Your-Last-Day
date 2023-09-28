@@ -12,7 +12,8 @@ public class GunSystem : MonoBehaviour
     int bulletsLeft, bulletsShot;
 
     //bools 
-    bool shooting, readyToShoot, reloading;
+    bool shooting, readyToShoot;
+    public bool reloading;
 
     //Reference
     public Camera camera;
@@ -40,10 +41,19 @@ public class GunSystem : MonoBehaviour
             MyInput();
 
             //SetText
-            ammoText.SetText(bulletsLeft + " / " + magazineSize);
-            gunText.SetText(weaponName);
+            if (!reloading)
+            {
+                ammoText.SetText(bulletsLeft + " / " + magazineSize);
+                gunText.SetText(weaponName);
+            }
+            else
+            {
+                ammoText.SetText("Reloading");
+            }
+
         }
     }
+
     private void MyInput()
     {
         if (!pauseMenu.GameIsPaused)
