@@ -62,6 +62,7 @@ public class GunSystem : MonoBehaviour
             else shooting = Input.GetKeyDown(KeyCode.Mouse0);
 
             if (Input.GetKeyDown(KeyCode.R) && bulletsLeft < magazineSize && !reloading) Reload();
+            if (bulletsLeft < 1 && !reloading && shooting) Reload();
 
             //Shoot
             if (readyToShoot && shooting && !reloading && bulletsLeft > 0)

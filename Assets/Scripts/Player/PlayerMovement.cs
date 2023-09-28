@@ -18,6 +18,7 @@ public class PlayerMovement : MonoBehaviour
 
     Vector3 velocity;
     bool isGrounded;
+
     void Update()
     {
         if (!pauseMenu.GameIsPaused)

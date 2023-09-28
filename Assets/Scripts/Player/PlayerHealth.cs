@@ -17,19 +17,10 @@ public class PlayerHealth : MonoBehaviour
         currentHealth = maxHealth;
     }
 
-    private void Update()
-    {
-        if (!pauseMenu.GameIsPaused)
-        {
-
-            //SetText
-            healthText.SetText("Health: " + currentHealth);
-        }
-    }
-
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
+        healthText.SetText("Health: " + currentHealth);
 
         if (currentHealth <= 0)
         {
